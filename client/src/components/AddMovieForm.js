@@ -9,22 +9,39 @@ const AddMovieForm = (props) => {
 	const { push } = useHistory();
 
 	const [newMovie, setNewMovie] = useState({
+        id: "",
 		title:"",
 		director: "",
-		genre: "",
 		metascore: 0,
+        genre: "",
 		description: ""
 	});
 	
 	const handleChange = (e) => {
-        setNewMovie({
-            ...newMovie,
-            [e.target.name]: e.target.value
-        });
+        if (e.target.name === 'metascore') {
+            setNewMovie({
+                ...newMovie,
+                [e.target.name]: Number(e.target.value)
+            });
+        } else {
+            setNewMovie({
+                ...newMovie,
+                [e.target.name]: e.target.value
+            });
+        }
     }
 
     const handleSubmit = (e) => {
 		e.preventDefault();
+        axios
+            .post('http://localhost:5000/api/movies', newMovie)
+            .then(resp => {
+                props.setMovies(resp.data);
+				push('/movies/');
+            })
+            .catch(err => {
+                console.log(err);
+            });
 	}
 	
 	const { title, director, genre, metascore, description } = newMovie;
